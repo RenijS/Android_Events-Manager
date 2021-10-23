@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@android:color/darker_gray">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_white_radius"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6sp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:textSize="16dp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/tvStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Select Date and Time"
+                android:textSize="16dp"
+                android:layout_weight="2"
+                android:gravity="end"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6sp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="End"
+                android:textSize="16dp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/tvEnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Select Date and Time"
+                android:textSize="16dp"
+                android:layout_weight="2"
+                android:gravity="end"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_white_radius"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_location"/>
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Location"
+            android:textSize="16dp"
+            android:layout_marginStart="6sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_white_radius"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_description"/>
+
+        <TextView
+            android:id="@+id/tvDes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:textSize="16dp"
+            android:layout_marginStart="6sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancelBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_weight="1"
+            android:layout_marginEnd="3dp"
+            android:backgroundTint="@android:color/darker_gray"/>
+        <Button
+            android:id="@+id/addBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:layout_weight="1"
+            android:layout_marginStart="3dp"
+            android:backgroundTint="@android:color/darker_gray"/>
+    </LinearLayout>
+</LinearLayout>

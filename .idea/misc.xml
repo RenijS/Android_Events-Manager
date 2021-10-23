@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/renij/Desktop/EventsManager/app/src/main/res/drawable/bg_white_radius.xml" value="0.1" />
         <entry key="..\:/Users/renij/Desktop/EventsManager/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/renij/Desktop/EventsManager/app/src/main/res/layout/add_events_layout.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/renij/Desktop/EventsManager/app/src/main/res/layout/rv_layout.xml" value="0.3333333333333333" />
       </map>
     </option>
