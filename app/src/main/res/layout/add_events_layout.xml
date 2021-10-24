@@ -80,8 +80,8 @@
             android:layout_height="match_parent"
             android:src="@drawable/ic_location"/>
 
-        <TextView
-            android:id="@+id/tvLocation"
+        <EditText
+            android:id="@+id/etLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Location"
@@ -101,8 +101,8 @@
             android:layout_height="match_parent"
             android:src="@drawable/ic_description"/>
 
-        <TextView
-            android:id="@+id/tvDes"
+        <EditText
+            android:id="@+id/etDes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description"
