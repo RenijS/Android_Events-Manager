@@ -54,10 +54,31 @@ class MainActivity : AppCompatActivity() {
         initWidget()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(binding.optionsBtn.visibility == View.GONE){
+            binding.importBtn.visibility = View.GONE
+            binding.deleteBtn.visibility = View.GONE
+            binding.updateBtn.visibility = View.GONE
+            binding.addBtn.visibility = View.GONE
+            binding.backBtn.visibility = View.GONE
+
+            binding.optionsBtn.visibility = View.VISIBLE
+            binding.llEventsAmount.visibility = View.VISIBLE
+
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initWidget(){
         addBtn = binding.addBtn
 
+        binding.optionsBtn.setOnClickListener {
+            buttonVisibilityWork()
+        }
+        binding.backBtn.setOnClickListener {
+            buttonVisibilityWork()
+        }
         addBtn.setOnClickListener {
             val dialog = Dialog(this)
             dialogBinding = AddEventsLayoutBinding.inflate(layoutInflater)
@@ -68,14 +89,14 @@ class MainActivity : AppCompatActivity() {
             dialogBinding.addBtn.setOnClickListener {
                 if(dialogBinding.tvStart.text.isEmpty() || dialogBinding.tvEnd.text.isEmpty()){
                     Toast.makeText(this, "Time is empty", Toast.LENGTH_SHORT).show()
-                    dialogBinding.tvStart.setHintTextColor(Color.RED)
+                    dialogBinding.tvStart.setHintTextColor(resources.getColor(R.color.red))
                     dialogBinding.tvStart.hint = "Please select time and date"
-                    dialogBinding.tvEnd.setHintTextColor(Color.RED)
+                    dialogBinding.tvEnd.setHintTextColor(resources.getColor(R.color.red))
                     dialogBinding.tvEnd.hint = "Please select time and date"
                 }
                 else if (dialogBinding.etTitle.text.isEmpty()){
                     Toast.makeText(this, "Title is empty", Toast.LENGTH_SHORT).show()
-                    dialogBinding.etTitle.setHintTextColor(Color.RED)
+                    dialogBinding.etTitle.setHintTextColor(resources.getColor(R.color.red))
                     dialogBinding.etTitle.hint = "Please enter title"
                 }
                 else if(parseDateTime(dialogBinding.tvStart.text.toString()) > parseDateTime(dialogBinding.tvEnd.text.toString())){
@@ -95,7 +116,30 @@ class MainActivity : AppCompatActivity() {
             }
             dialog.setCancelable(false)
             dialog.show()
-            dialog.window!!.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            dialog.window!!.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        }
+    }
+
+    private fun buttonVisibilityWork(){
+        if(binding.optionsBtn.visibility == View.GONE){
+            binding.importBtn.visibility = View.GONE
+            binding.deleteBtn.visibility = View.GONE
+            binding.updateBtn.visibility = View.GONE
+            binding.addBtn.visibility = View.GONE
+            binding.backBtn.visibility = View.GONE
+
+            binding.optionsBtn.visibility = View.VISIBLE
+            binding.llEventsAmount.visibility = View.VISIBLE
+
+        } else{
+            binding.llEventsAmount.visibility = View.GONE
+            binding.optionsBtn.visibility = View.GONE
+
+            binding.importBtn.visibility = View.VISIBLE
+            binding.deleteBtn.visibility = View.VISIBLE
+            binding.updateBtn.visibility = View.VISIBLE
+            binding.addBtn.visibility = View.VISIBLE
+            binding.backBtn.visibility = View.VISIBLE
         }
     }
 

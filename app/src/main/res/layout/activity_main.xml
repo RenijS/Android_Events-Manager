@@ -23,13 +23,15 @@
         app:layout_constraintBottom_toTopOf="@id/addBtn" />
 
     <LinearLayout
+        android:id="@+id/llEventsAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/addBtn"
-        app:layout_constraintBottom_toBottomOf="@id/addBtn"
-        app:layout_constraintEnd_toStartOf="@id/addBtn"
+        app:layout_constraintTop_toTopOf="@id/optionsBtn"
+        app:layout_constraintBottom_toBottomOf="@id/optionsBtn"
+        app:layout_constraintEnd_toStartOf="@id/optionsBtn"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -43,24 +45,93 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/optionsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/light_blue"
+        android:contentDescription="@string/options_button"
+        android:src="@drawable/ic_option"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="12sp"
+        android:layout_marginBottom="12dp"
+        android:visibility="visible"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/light_blue"
+        android:contentDescription="@string/back_button"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_marginEnd="12sp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/green"
+        android:contentDescription="@string/add_button"
         android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/backBtn"
+        app:layout_constraintTop_toTopOf="@id/backBtn"
+        app:layout_constraintEnd_toStartOf="@id/backBtn"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="Add Button" />
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"/>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/updateBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Import"
+        android:backgroundTint="@color/yellow"
+        android:contentDescription="@string/update_button"
+        android:src="@drawable/ic_update"
         app:layout_constraintBottom_toBottomOf="@id/addBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.96"
-        app:layout_constraintStart_toEndOf="@id/addBtn"
-        app:layout_constraintTop_toTopOf="@id/addBtn" />
+        app:layout_constraintTop_toTopOf="@id/addBtn"
+        app:layout_constraintEnd_toStartOf="@id/addBtn"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="6sp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/deleteBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/red"
+        android:contentDescription="@string/delete_button"
+        android:src="@drawable/ic_delete"
+        app:layout_constraintBottom_toBottomOf="@id/updateBtn"
+        app:layout_constraintTop_toTopOf="@id/updateBtn"
+        app:layout_constraintEnd_toStartOf="@id/updateBtn"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="6sp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/importBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/orange"
+        android:contentDescription="@string/import_events_to_calendar_button"
+        android:src="@drawable/ic_download"
+        app:layout_constraintBottom_toBottomOf="@id/deleteBtn"
+        app:layout_constraintTop_toTopOf="@id/deleteBtn"
+        app:layout_constraintEnd_toStartOf="@id/deleteBtn"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="6sp"
+        android:visibility="gone"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
