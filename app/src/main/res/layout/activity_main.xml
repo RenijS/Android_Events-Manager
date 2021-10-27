@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total Events: " />
+            android:text="Events: " />
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,29 +49,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/light_blue"
-        android:contentDescription="@string/options_button"
+        android:contentDescription="@string/back_button"
         android:src="@drawable/ic_option"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginEnd="12sp"
         android:layout_marginBottom="12dp"
         android:visibility="visible"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/light_blue"
-        android:contentDescription="@string/back_button"
-        android:src="@drawable/ic_arrow_back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        android:layout_marginEnd="12sp"
-        android:layout_marginBottom="12dp"
-        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addBtn"
@@ -80,9 +65,9 @@
         android:backgroundTint="@color/green"
         android:contentDescription="@string/add_button"
         android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="@id/backBtn"
-        app:layout_constraintTop_toTopOf="@id/backBtn"
-        app:layout_constraintEnd_toStartOf="@id/backBtn"
+        app:layout_constraintBottom_toBottomOf="@id/optionsBtn"
+        app:layout_constraintTop_toTopOf="@id/optionsBtn"
+        app:layout_constraintEnd_toStartOf="@id/optionsBtn"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginEnd="8dp"

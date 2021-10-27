@@ -4,13 +4,12 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -19,12 +18,8 @@ import com.example.eventsmanager.data.EventViewModel
 import com.example.eventsmanager.databinding.ActivityMainBinding
 import com.example.eventsmanager.databinding.AddEventsLayoutBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.timepicker.TimeFormat
-import kotlinx.android.synthetic.main.add_events_layout.*
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -43,6 +38,11 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private val eventTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
+    private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
+    private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
+    private val fromEnd: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.from_end_anim) }
+    private val toEnd: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_end_anim) }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,30 +54,13 @@ class MainActivity : AppCompatActivity() {
         initWidget()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if(binding.optionsBtn.visibility == View.GONE){
-            binding.importBtn.visibility = View.GONE
-            binding.deleteBtn.visibility = View.GONE
-            binding.updateBtn.visibility = View.GONE
-            binding.addBtn.visibility = View.GONE
-            binding.backBtn.visibility = View.GONE
-
-            binding.optionsBtn.visibility = View.VISIBLE
-            binding.llEventsAmount.visibility = View.VISIBLE
-
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initWidget(){
         addBtn = binding.addBtn
 
         binding.optionsBtn.setOnClickListener {
             buttonVisibilityWork()
-        }
-        binding.backBtn.setOnClickListener {
-            buttonVisibilityWork()
+            animationWork()
         }
         addBtn.setOnClickListener {
             val dialog = Dialog(this)
@@ -121,25 +104,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buttonVisibilityWork(){
-        if(binding.optionsBtn.visibility == View.GONE){
+        if(binding.importBtn.visibility == View.VISIBLE){
             binding.importBtn.visibility = View.GONE
             binding.deleteBtn.visibility = View.GONE
             binding.updateBtn.visibility = View.GONE
             binding.addBtn.visibility = View.GONE
-            binding.backBtn.visibility = View.GONE
-
-            binding.optionsBtn.visibility = View.VISIBLE
-            binding.llEventsAmount.visibility = View.VISIBLE
 
         } else{
-            binding.llEventsAmount.visibility = View.GONE
-            binding.optionsBtn.visibility = View.GONE
-
             binding.importBtn.visibility = View.VISIBLE
             binding.deleteBtn.visibility = View.VISIBLE
             binding.updateBtn.visibility = View.VISIBLE
             binding.addBtn.visibility = View.VISIBLE
-            binding.backBtn.visibility = View.VISIBLE
+        }
+    }
+
+    private fun animationWork(){
+        //use visible instead of gone because we change visibility before animation
+        if(binding.importBtn.visibility == View.VISIBLE){
+            binding.optionsBtn.startAnimation(rotateOpen)
+            binding.addBtn.startAnimation(fromEnd)
+            binding.updateBtn.startAnimation(fromEnd)
+            binding.deleteBtn.startAnimation(fromEnd)
+            binding.importBtn.startAnimation(fromEnd)
+        }
+        else{
+            binding.optionsBtn.startAnimation(rotateClose)
+            binding.addBtn.startAnimation(toEnd)
+            binding.updateBtn.startAnimation(toEnd)
+            binding.deleteBtn.startAnimation(toEnd)
+            binding.importBtn.startAnimation(toEnd)
         }
     }
 
