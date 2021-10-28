@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -23,7 +25,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private lateinit var mEventViewModel: EventViewModel
 
@@ -57,6 +59,16 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initWidget(){
         addBtn = binding.addBtn
+
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.months,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.monthSpinner.adapter = adapter
+            binding.monthSpinner.onItemSelectedListener = this
+        }
 
         binding.optionsBtn.setOnClickListener {
             buttonVisibilityWork()
@@ -187,4 +199,14 @@ class MainActivity : AppCompatActivity() {
 
         val date = null
     }
+
+    override fun onItemSelected(p: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+        val text = p?.getItemAtPosition(position).toString()
+        Toast.makeText(this, "$text selected", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+        TODO("Not yet implemented")
+    }
+
 }
