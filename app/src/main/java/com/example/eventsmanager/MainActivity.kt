@@ -20,6 +20,8 @@ import com.example.eventsmanager.data.EventViewModel
 import com.example.eventsmanager.databinding.ActivityMainBinding
 import com.example.eventsmanager.databinding.AddEventsLayoutBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.whiteelephant.monthpicker.MonthPickerDialog
+import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -59,6 +61,22 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initWidget(){
         addBtn = binding.addBtn
+
+        //year picker
+        binding.year.setOnClickListener {
+            val today = Calendar.getInstance()
+            val builder = MonthPickerDialog.Builder(this,
+                 MonthPickerDialog.OnDateSetListener(){selectedMonth, selectedYear -> binding.year.text = selectedYear.toString()}
+                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
+
+            builder.setActivatedMonth(Calendar.MONTH)
+                .setMinYear(1999)
+                .setActivatedYear(today.get(Calendar.YEAR))
+                .setMaxYear(2030)
+                .setTitle("Select Year")
+                .showYearOnly()
+                .build().show()
+        }
 
         ArrayAdapter.createFromResource(
             this,
