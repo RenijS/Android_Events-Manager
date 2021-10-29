@@ -12,9 +12,7 @@ data class Event(
 
     val endTime: String?,
 
-    val latitude: Double? = null,
-
-    val longitude: Double? = null,
+    val location: String? = null,
 
     var detail: String? = null,
 

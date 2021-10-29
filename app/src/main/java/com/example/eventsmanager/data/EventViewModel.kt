@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 
 class EventViewModel(application: Application): AndroidViewModel(application) {
-    private val readAllData: LiveData<List<Event>>
+    val readAllData: LiveData<List<Event>>
     private val repository: EventRepository
 
     init {

@@ -16,11 +16,15 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.eventsmanager.data.Event
 import com.example.eventsmanager.data.EventViewModel
 import com.example.eventsmanager.databinding.ActivityMainBinding
 import com.example.eventsmanager.databinding.AddEventsLayoutBinding
+import com.example.eventsmanager.databinding.RvLayoutBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.whiteelephant.monthpicker.MonthPickerDialog
+import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -64,6 +68,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun initWidget(){
         addBtn = binding.addBtn
 
+        val adapter = EventAdapter()
+        binding.rvEvents.adapter = adapter
+        binding.rvEvents.layoutManager = LinearLayoutManager(this)
+
+        mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+            adapter.setData(events)
+        })
+
         binding.month.text = monthFormatter.format(today.time)
         //month picker
         binding.month.setOnClickListener {
@@ -71,8 +83,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 MonthPickerDialog.OnDateSetListener(){ selectedMonth, _ ->
                     val cal = Calendar.getInstance()
                     cal[Calendar.MONTH] = selectedMonth
-                    val month_name = monthFormatter.format(cal.time)
-                    binding.month.text = month_name
+                    binding.month.text = monthFormatter.format(cal.time)
                 }
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
 
@@ -108,10 +119,27 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             binding.monthSpinner.onItemSelectedListener = this
         }
 
+        //activate for rv button
+        var activate = false
         binding.optionsBtn.setOnClickListener {
             buttonVisibilityWork()
             animationWork()
+            if (activate){
+                activate = false
+                adapter.setActivate(activate)
+            }
         }
+
+        binding.deleteBtn.setOnClickListener {
+            if (activate){
+                activate = false
+                adapter.setActivate(activate)
+            }else{
+                activate = true
+                adapter.setActivate(activate)
+            }
+        }
+
         addBtn.setOnClickListener {
             val dialog = Dialog(this)
             dialogBinding = AddEventsLayoutBinding.inflate(layoutInflater)
@@ -136,7 +164,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     Toast.makeText(this, "Start time should come first before end time", Toast.LENGTH_LONG).show()
                 }
                 else{
-                    //insertDataToDatabase()
+                    insertDataToDatabase()
                 }
             }
             dialogBinding.llStart.setOnClickListener {
@@ -235,9 +263,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val title = dialogBinding.etTitle.text
         val location = dialogBinding.etLocation.text
         val desc = dialogBinding.etDes.text
-
-        val date = null
+        val startTime = dialogBinding.tvStart.text
+        val endTime = dialogBinding.tvEnd.text
+        val event = Event(0,startTime.toString(),endTime.toString(),location.toString(),desc.toString(),title.toString())
+        //add data
+        mEventViewModel.addEvent(event)
+        Toast.makeText(this, "Added", Toast.LENGTH_SHORT).show()
     }
+
 
     override fun onItemSelected(p: AdapterView<*>?, view: View?, position: Int, p3: Long) {
         val text = p?.getItemAtPosition(position).toString()
