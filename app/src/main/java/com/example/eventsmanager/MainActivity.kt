@@ -21,7 +21,6 @@ import com.example.eventsmanager.databinding.ActivityMainBinding
 import com.example.eventsmanager.databinding.AddEventsLayoutBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.whiteelephant.monthpicker.MonthPickerDialog
-import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -35,13 +34,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var dialogBinding: AddEventsLayoutBinding
 
     private lateinit var addBtn: FloatingActionButton
+    private var today = Calendar.getInstance()
     @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.N)
-    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val timeFormatter = SimpleDateFormat("HH:mm", Locale.US)
-    var month_date = SimpleDateFormat("MMM")
+    private val monthFormatter = SimpleDateFormat("MMM")
     @RequiresApi(Build.VERSION_CODES.O)
     private val eventTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
@@ -63,13 +64,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun initWidget(){
         addBtn = binding.addBtn
 
+        binding.month.text = monthFormatter.format(today.time)
+        //month picker
         binding.month.setOnClickListener {
-            val today = Calendar.getInstance()
             val builder = MonthPickerDialog.Builder(this,
-                MonthPickerDialog.OnDateSetListener(){selectedMonth, selectedYear ->
+                MonthPickerDialog.OnDateSetListener(){ selectedMonth, _ ->
                     val cal = Calendar.getInstance()
                     cal[Calendar.MONTH] = selectedMonth
-                    val month_name = month_date.format(cal.time)
+                    val month_name = monthFormatter.format(cal.time)
                     binding.month.text = month_name
                 }
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
@@ -83,15 +85,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         //year picker
         binding.year.setOnClickListener {
-            val today = Calendar.getInstance()
             val builder = MonthPickerDialog.Builder(this,
-                 MonthPickerDialog.OnDateSetListener(){selectedMonth, selectedYear -> binding.year.text = selectedYear.toString()}
+                 MonthPickerDialog.OnDateSetListener(){ _, selectedYear -> binding.year.text = selectedYear.toString()}
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
 
             builder.setActivatedMonth(Calendar.MONTH)
                 .setMinYear(1999)
                 .setActivatedYear(today.get(Calendar.YEAR))
-                .setMaxYear(2030)
+                .setMaxYear(today.get(Calendar.YEAR)+25)
                 .setTitle("Select Year")
                 .showYearOnly()
                 .build().show()
@@ -185,6 +186,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun showDatePickerDialog(calendar: Calendar, identifier: Int){
         val datePickerDialog =
             DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, yr, mnth, dayOfMonth ->
