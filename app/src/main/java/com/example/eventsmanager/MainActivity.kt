@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @RequiresApi(Build.VERSION_CODES.N)
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val timeFormatter = SimpleDateFormat("HH:mm", Locale.US)
+    var month_date = SimpleDateFormat("MMM")
     @RequiresApi(Build.VERSION_CODES.O)
     private val eventTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
@@ -62,6 +63,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun initWidget(){
         addBtn = binding.addBtn
 
+        binding.month.setOnClickListener {
+            val today = Calendar.getInstance()
+            val builder = MonthPickerDialog.Builder(this,
+                MonthPickerDialog.OnDateSetListener(){selectedMonth, selectedYear ->
+                    val cal = Calendar.getInstance()
+                    cal[Calendar.MONTH] = selectedMonth
+                    val month_name = month_date.format(cal.time)
+                    binding.month.text = month_name
+                }
+                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
+
+            builder.setActivatedMonth(Calendar.MONTH)
+                .setActivatedMonth(today.get(Calendar.MONTH))
+                .setTitle("Select Month")
+                .showMonthOnly()
+                .build().show()
+        }
+
         //year picker
         binding.year.setOnClickListener {
             val today = Calendar.getInstance()
@@ -80,7 +99,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         ArrayAdapter.createFromResource(
             this,
-            R.array.months,
+            R.array.selection,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -221,6 +240,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onItemSelected(p: AdapterView<*>?, view: View?, position: Int, p3: Long) {
         val text = p?.getItemAtPosition(position).toString()
         Toast.makeText(this, "$text selected", Toast.LENGTH_SHORT).show()
+        when(text){
+            "Year" -> binding.month.visibility = View.GONE
+            "Month+Year" -> binding.month.visibility = View.VISIBLE
+        }
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {

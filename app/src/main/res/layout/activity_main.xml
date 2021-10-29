@@ -7,14 +7,24 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="month"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"/>
+    <TextView
         android:id="@+id/year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="2021"
         android:textSize="25sp"
         android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toEndOf="@id/month"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="6sp"/>
 
     <Spinner
         android:id="@+id/monthSpinner"
@@ -22,6 +32,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="0dp"
