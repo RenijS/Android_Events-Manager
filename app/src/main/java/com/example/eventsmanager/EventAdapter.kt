@@ -13,6 +13,7 @@ class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     private var eventList = emptyList<Event>()
     private var activate: Boolean = false
+    private var editType: Int = 0;
 
     class ViewHolder(private val binding: RvLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -31,6 +32,12 @@ class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
         if (activate){
             binding.editBtn.visibility = View.VISIBLE
+            if(editType == 0){
+                binding.editBtn.setImageResource(R.drawable.ic_delete)
+            }
+            else{
+                binding.editBtn.setImageResource(R.drawable.ic_update)
+            }
         } else{
             binding.editBtn.visibility = View.GONE
         }
@@ -47,6 +54,11 @@ class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     fun setActivate(activate: Boolean){
         this.activate = activate
+        notifyDataSetChanged()
+    }
+    fun setActivate(activate: Boolean, type: Int){
+        this.activate = activate
+        editType = type
         notifyDataSetChanged()
     }
 }

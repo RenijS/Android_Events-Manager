@@ -136,7 +136,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 adapter.setActivate(activate)
             }else{
                 activate = true
+                adapter.setActivate(activate, 0)
+            }
+        }
+
+        binding.updateBtn.setOnClickListener {
+            if (activate){
+                activate = false
                 adapter.setActivate(activate)
+            }else{
+                activate = true
+                adapter.setActivate(activate, 1)
             }
         }
 
