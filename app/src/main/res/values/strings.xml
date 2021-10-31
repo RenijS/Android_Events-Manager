@@ -9,6 +9,7 @@
     <string name="edit_button">edit button</string>
 
     <string-array name="selection">
+        <item>All</item>
         <item>Year</item>
         <item>Month+Year</item>
     </string-array>

@@ -1,17 +1,23 @@
 package com.example.eventsmanager
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventsmanager.data.Event
+import com.example.eventsmanager.databinding.AddEventsLayoutBinding
 import com.example.eventsmanager.databinding.RvLayoutBinding
 
-class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
+class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     lateinit var binding: RvLayoutBinding
 
     private var eventList = emptyList<Event>()
+    private var filterList = emptyList<Event>()
     private var activate: Boolean = false
     private var editType: Int = 0;
 
@@ -25,7 +31,7 @@ class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: EventAdapter.ViewHolder, position: Int) {
-        val currentEvent = eventList[position]
+        val currentEvent = filterList[position]
         binding.tvTitle.text = currentEvent.title
         binding.tvStartTime.text = currentEvent.startTime
         binding.tvEndTime.text = currentEvent.endTime
@@ -41,6 +47,28 @@ class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
         } else{
             binding.editBtn.visibility = View.GONE
         }
+
+        binding.editBtn.setOnClickListener {
+            if(editType == 0){
+                val builder = AlertDialog.Builder(context)
+                builder.setTitle("Delete Event?")
+                builder.apply {
+                    setPositiveButton("Ok", DialogInterface.OnClickListener { dialogInterface, id ->  })
+                    setNegativeButton("No", DialogInterface.OnClickListener { dialogInterface, id ->  })
+                }
+                builder.create()
+            }
+            else{
+                val dialog = Dialog(context)
+                val dialogBinding = AddEventsLayoutBinding.inflate(LayoutInflater.from(context))
+                dialog.setContentView(dialogBinding.root)
+                dialogBinding.addBtn.text = "Save"
+                dialogBinding.cancelBtn.setOnClickListener {
+                    dialogBinding.addBtn.text = "Add"
+                    dialog.dismiss()
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int {
@@ -49,7 +77,29 @@ class EventAdapter: RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     fun setData(events : List<Event>){
         this.eventList = events
+        this.filterList = events
         notifyDataSetChanged()
+    }
+
+    fun setFilterList(year: String?, month: String?){
+        for(event in eventList){
+            val startTime = event.startTime
+            if(month == null && year == null){
+                filterList = eventList
+            }
+            if(month == null && year != null) {
+                if (startTime.substring(0, startTime.indexOf("-")-1) == year) {
+                    println("year event: $event")
+                }
+            }
+            else{
+                if (startTime.substring(0, startTime.indexOf("-")) == year &&
+                    startTime.substring(startTime.indexOf("-")+1, startTime.length-1) == month
+                ) {
+                    println("month year event: $event")
+                }
+            }
+        }
     }
 
     fun setActivate(activate: Boolean){

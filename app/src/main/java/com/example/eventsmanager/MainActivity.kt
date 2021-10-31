@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @RequiresApi(Build.VERSION_CODES.O)
     private val eventTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
+    private val adapter = EventAdapter(this)
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
@@ -68,7 +69,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun initWidget(){
         addBtn = binding.addBtn
 
-        val adapter = EventAdapter()
         binding.rvEvents.adapter = adapter
         binding.rvEvents.layoutManager = LinearLayoutManager(this)
 
@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     val cal = Calendar.getInstance()
                     cal[Calendar.MONTH] = selectedMonth
                     binding.month.text = monthFormatter.format(cal.time)
+                    adapter.setFilterList(binding.year.text.toString(), monthFormatter.format(cal.time))
                 }
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
 
@@ -97,7 +98,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //year picker
         binding.year.setOnClickListener {
             val builder = MonthPickerDialog.Builder(this,
-                 MonthPickerDialog.OnDateSetListener(){ _, selectedYear -> binding.year.text = selectedYear.toString()}
+                 MonthPickerDialog.OnDateSetListener() { _, selectedYear ->
+                     binding.year.text = selectedYear.toString()
+                     adapter.setFilterList(selectedYear.toString(), null)
+                 }
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
 
             builder.setActivatedMonth(Calendar.MONTH)
@@ -286,8 +290,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val text = p?.getItemAtPosition(position).toString()
         Toast.makeText(this, "$text selected", Toast.LENGTH_SHORT).show()
         when(text){
-            "Year" -> binding.month.visibility = View.GONE
-            "Month+Year" -> binding.month.visibility = View.VISIBLE
+            "Year" -> {
+                binding.month.visibility = View.GONE
+                binding.year.text = today.get(Calendar.YEAR).toString()
+            }
+            "Month+Year" -> {
+                binding.month.visibility = View.VISIBLE
+                binding.month.text = monthFormatter.format(today.time).toString()
+            }
+            "All" ->{
+                binding.month.visibility = View.GONE
+                binding.year.visibility = View.GONE
+                adapter.setFilterList(null, null)
+            }
         }
     }
 
