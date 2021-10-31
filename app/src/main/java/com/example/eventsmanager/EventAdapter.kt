@@ -17,7 +17,7 @@ class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdap
     lateinit var binding: RvLayoutBinding
 
     private var eventList = emptyList<Event>()
-    private var filterList = emptyList<Event>()
+    private var filterList = mutableListOf<Event>()
     private var activate: Boolean = false
     private var editType: Int = 0;
 
@@ -72,33 +72,35 @@ class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdap
     }
 
     override fun getItemCount(): Int {
-        return eventList.size
+        return filterList.size
     }
 
     fun setData(events : List<Event>){
         this.eventList = events
-        this.filterList = events
+        this.filterList = eventList.toMutableList()
         notifyDataSetChanged()
     }
 
     fun setFilterList(year: String?, month: String?){
+        filterList.clear()
         for(event in eventList){
             val startTime = event.startTime
             if(month == null && year == null){
-                filterList = eventList
+                filterList = eventList.toMutableList()
+                notifyDataSetChanged()
             }
             else if(month == null && year != null) {
-                println("check!!!:${startTime.substring(0, startTime.indexOf("-"))}=${year},${startTime.substring(0, startTime.indexOf("-")).equals(year)}")
                 if (startTime.substring(0, startTime.indexOf("-")).equals(year)) {
-                    filterList = emptyList()
-
+                    filterList.add(event)
                 }
+                notifyDataSetChanged()
             }
             else{
                 if (startTime.substring(0, startTime.indexOf("-")) == year &&
-                    startTime.substring(startTime.indexOf("-")+1, startTime.indexOf("-")+3) == month) {
-                    println("month year event: $event")
+                    Integer.parseInt(startTime.substring(startTime.indexOf("-")+1, startTime.indexOf("-")+3)) == Integer.parseInt(month)) {
+                    filterList.add(event)
                 }
+                notifyDataSetChanged()
             }
         }
     }

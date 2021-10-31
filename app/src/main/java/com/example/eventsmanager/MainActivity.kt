@@ -77,19 +77,23 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         })
 
         binding.month.text = monthFormatter.format(today.time)
+        //for month picker initial month selection
+        var selectMonth = today.get(Calendar.MONTH)
         //month picker
         binding.month.setOnClickListener {
             val builder = MonthPickerDialog.Builder(this,
                 MonthPickerDialog.OnDateSetListener(){ selectedMonth, _ ->
                     val cal = Calendar.getInstance()
                     cal[Calendar.MONTH] = selectedMonth
+                    cal[Calendar.DAY_OF_MONTH] = 1
+                    selectMonth = selectedMonth
                     binding.month.text = monthFormatter.format(cal.time)
                     adapter.setFilterList(binding.year.text.toString(), (selectedMonth+1).toString())
                 }
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
 
             builder.setActivatedMonth(Calendar.MONTH)
-                .setActivatedMonth(today.get(Calendar.MONTH))
+                .setActivatedMonth(selectMonth)
                 .setTitle("Select Month")
                 .showMonthOnly()
                 .build().show()
@@ -106,7 +110,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
             builder.setActivatedMonth(Calendar.MONTH)
                 .setMinYear(1999)
-                .setActivatedYear(today.get(Calendar.YEAR))
+                .setActivatedYear(Integer.parseInt(binding.year.text.toString()))
                 .setMaxYear(today.get(Calendar.YEAR)+25)
                 .setTitle("Select Year")
                 .showYearOnly()
@@ -179,6 +183,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 }
                 else{
                     insertDataToDatabase()
+                    dialog.dismiss()
                 }
             }
             dialogBinding.llStart.setOnClickListener {
