@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     val cal = Calendar.getInstance()
                     cal[Calendar.MONTH] = selectedMonth
                     binding.month.text = monthFormatter.format(cal.time)
-                    adapter.setFilterList(binding.year.text.toString(), monthFormatter.format(cal.time))
+                    adapter.setFilterList(binding.year.text.toString(), (selectedMonth+1).toString())
                 }
                 , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
 
@@ -292,10 +292,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         when(text){
             "Year" -> {
                 binding.month.visibility = View.GONE
+                binding.year.visibility = View.VISIBLE
                 binding.year.text = today.get(Calendar.YEAR).toString()
             }
             "Month+Year" -> {
                 binding.month.visibility = View.VISIBLE
+                binding.year.visibility = View.VISIBLE
                 binding.month.text = monthFormatter.format(today.time).toString()
             }
             "All" ->{

@@ -87,15 +87,16 @@ class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdap
             if(month == null && year == null){
                 filterList = eventList
             }
-            if(month == null && year != null) {
-                if (startTime.substring(0, startTime.indexOf("-")-1) == year) {
-                    println("year event: $event")
+            else if(month == null && year != null) {
+                println("check!!!:${startTime.substring(0, startTime.indexOf("-"))}=${year},${startTime.substring(0, startTime.indexOf("-")).equals(year)}")
+                if (startTime.substring(0, startTime.indexOf("-")).equals(year)) {
+                    filterList = emptyList()
+
                 }
             }
             else{
                 if (startTime.substring(0, startTime.indexOf("-")) == year &&
-                    startTime.substring(startTime.indexOf("-")+1, startTime.length-1) == month
-                ) {
+                    startTime.substring(startTime.indexOf("-")+1, startTime.indexOf("-")+3) == month) {
                     println("month year event: $event")
                 }
             }
