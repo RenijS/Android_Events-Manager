@@ -7,12 +7,13 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eventsmanager.data.Event
 import com.example.eventsmanager.databinding.AddEventsLayoutBinding
 import com.example.eventsmanager.databinding.RvLayoutBinding
 
-class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
+class EventAdapter(private val context: Context, private val listener: OnItemClickListener): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     lateinit var binding: RvLayoutBinding
 
@@ -21,8 +22,21 @@ class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdap
     private var activate: Boolean = false
     private var editType: Int = 0;
 
-    class ViewHolder(private val binding: RvLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+    interface OnItemClickListener{
+        fun onItemClick(position: Int)
+    }
 
+    inner class ViewHolder(binding: RvLayoutBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        init {
+            binding.root.setOnClickListener(this)
+        }
+
+        override fun onClick(p0: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventAdapter.ViewHolder {

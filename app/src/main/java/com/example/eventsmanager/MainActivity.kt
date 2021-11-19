@@ -32,7 +32,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, EventAdapter.OnItemClickListener {
 
     private lateinit var mEventViewModel: EventViewModel
 
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @RequiresApi(Build.VERSION_CODES.O)
     private val eventTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    private val adapter = EventAdapter(this)
+    private val adapter = EventAdapter(this, this)
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
@@ -65,6 +65,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         mEventViewModel = ViewModelProvider(this).get(EventViewModel::class.java)
 
         initWidget()
+    }
+
+    override fun onItemClick(position: Int) {
+        Toast.makeText(this, "clicked: $position", Toast.LENGTH_SHORT).show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
