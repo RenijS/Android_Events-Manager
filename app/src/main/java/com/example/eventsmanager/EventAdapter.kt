@@ -114,4 +114,9 @@ class EventAdapter(private val context: Context): RecyclerView.Adapter<EventAdap
         editType = type
         notifyDataSetChanged()
     }
+
+    fun deleteItem(position: Int){
+        filterList.removeAt(position)
+        notifyDataSetChanged()
+    }
 }

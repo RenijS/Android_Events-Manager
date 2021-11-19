@@ -16,7 +16,9 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.eventsmanager.data.Event
 import com.example.eventsmanager.data.EventViewModel
 import com.example.eventsmanager.databinding.ActivityMainBinding
@@ -68,6 +70,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initWidget(){
         addBtn = binding.addBtn
+
+        val swipeGesture = object : SwipeGesture(this){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                when(direction){
+                    ItemTouchHelper.LEFT -> {
+                        adapter.deleteItem(viewHolder.adapterPosition)
+                    }
+                }
+            }
+        }
+        val touchHelper = ItemTouchHelper(swipeGesture)
+        touchHelper.attachToRecyclerView(binding.rvEvents)
 
         binding.rvEvents.adapter = adapter
         binding.rvEvents.layoutManager = LinearLayoutManager(this)
