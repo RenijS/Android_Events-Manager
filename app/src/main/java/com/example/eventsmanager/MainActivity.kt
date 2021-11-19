@@ -152,26 +152,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             }
         }
 
-        binding.deleteBtn.setOnClickListener {
-            if (activate){
-                activate = false
-                adapter.setActivate(activate)
-            }else{
-                activate = true
-                adapter.setActivate(activate, 0)
-            }
-        }
-
-        binding.updateBtn.setOnClickListener {
-            if (activate){
-                activate = false
-                adapter.setActivate(activate)
-            }else{
-                activate = true
-                adapter.setActivate(activate, 1)
-            }
-        }
-
         addBtn.setOnClickListener {
             val dialog = Dialog(this)
             dialogBinding = AddEventsLayoutBinding.inflate(layoutInflater)
@@ -217,14 +197,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun buttonVisibilityWork(){
         if(binding.importBtn.visibility == View.VISIBLE){
             binding.importBtn.visibility = View.GONE
-            binding.deleteBtn.visibility = View.GONE
-            binding.updateBtn.visibility = View.GONE
             binding.addBtn.visibility = View.GONE
 
         } else{
             binding.importBtn.visibility = View.VISIBLE
-            binding.deleteBtn.visibility = View.VISIBLE
-            binding.updateBtn.visibility = View.VISIBLE
             binding.addBtn.visibility = View.VISIBLE
         }
     }
@@ -234,15 +210,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         if(binding.importBtn.visibility == View.VISIBLE){
             binding.optionsBtn.startAnimation(rotateOpen)
             binding.addBtn.startAnimation(fromEnd)
-            binding.updateBtn.startAnimation(fromEnd)
-            binding.deleteBtn.startAnimation(fromEnd)
             binding.importBtn.startAnimation(fromEnd)
         }
         else{
             binding.optionsBtn.startAnimation(rotateClose)
             binding.addBtn.startAnimation(toEnd)
-            binding.updateBtn.startAnimation(toEnd)
-            binding.deleteBtn.startAnimation(toEnd)
             binding.importBtn.startAnimation(toEnd)
         }
     }

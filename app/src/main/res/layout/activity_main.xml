@@ -99,12 +99,12 @@
         android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/updateBtn"
+        android:id="@+id/importBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/yellow"
-        android:contentDescription="@string/update_button"
-        android:src="@drawable/ic_update"
+        android:backgroundTint="@color/orange"
+        android:contentDescription="@string/import_events_to_calendar_button"
+        android:src="@drawable/ic_download"
         app:layout_constraintBottom_toBottomOf="@id/addBtn"
         app:layout_constraintTop_toTopOf="@id/addBtn"
         app:layout_constraintEnd_toStartOf="@id/addBtn"
@@ -112,36 +112,5 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginEnd="6sp"
         android:visibility="gone"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/deleteBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/red"
-        android:contentDescription="@string/delete_button"
-        android:src="@drawable/ic_delete"
-        app:layout_constraintBottom_toBottomOf="@id/updateBtn"
-        app:layout_constraintTop_toTopOf="@id/updateBtn"
-        app:layout_constraintEnd_toStartOf="@id/updateBtn"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginEnd="6sp"
-        android:visibility="gone"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/importBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/orange"
-        android:contentDescription="@string/import_events_to_calendar_button"
-        android:src="@drawable/ic_download"
-        app:layout_constraintBottom_toBottomOf="@id/deleteBtn"
-        app:layout_constraintTop_toTopOf="@id/deleteBtn"
-        app:layout_constraintEnd_toStartOf="@id/deleteBtn"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginEnd="6sp"
-        android:visibility="gone"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
