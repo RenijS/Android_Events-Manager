@@ -23,4 +23,10 @@ class EventViewModel(application: Application): AndroidViewModel(application) {
             repository.addEvent(event)
         }
     }
+
+    fun updateEvent(event: Event){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateEvent(event)
+        }
+    }
 }

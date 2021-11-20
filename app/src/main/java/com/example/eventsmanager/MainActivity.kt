@@ -67,8 +67,74 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         initWidget()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "clicked: $position", Toast.LENGTH_SHORT).show()
+        val dialog = Dialog(this)
+        dialogBinding = AddEventsLayoutBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+
+        dialogBinding.addBtn.text = "Update"
+
+        var eventId: Int? = null
+        var startTime: String? = null
+        var endTime: String? = null
+        var location: String? = null
+        var detail: String? = null
+        var title: String? = null
+
+        mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+            eventId = events[position].eventId
+            startTime = events[position].startTime
+            endTime = events[position].endTime
+            location = events[position].location
+            detail = events[position].detail
+            title = events[position].title
+        })
+        dialogBinding.etTitle.setText(title)
+        dialogBinding.etDes.setText(detail)
+        dialogBinding.etLocation.setText(location)
+        dialogBinding.tvStart.text = startTime
+        dialogBinding.tvEnd.text = endTime
+
+        dialogBinding.cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialogBinding.addBtn.setOnClickListener {
+            if(dialogBinding.tvStart.text.isEmpty() || dialogBinding.tvEnd.text.isEmpty()){
+                Toast.makeText(this, "Time is empty", Toast.LENGTH_SHORT).show()
+                dialogBinding.tvStart.setHintTextColor(resources.getColor(R.color.red))
+                dialogBinding.tvStart.hint = "Please select time and date"
+                dialogBinding.tvEnd.setHintTextColor(resources.getColor(R.color.red))
+                dialogBinding.tvEnd.hint = "Please select time and date"
+            }
+            else if (dialogBinding.etTitle.text.isEmpty()){
+                Toast.makeText(this, "Title is empty", Toast.LENGTH_SHORT).show()
+                dialogBinding.etTitle.setHintTextColor(resources.getColor(R.color.red))
+                dialogBinding.etTitle.hint = "Please enter title"
+            }
+            else if(parseDateTime(dialogBinding.tvStart.text.toString()) > parseDateTime(dialogBinding.tvEnd.text.toString())){
+                Toast.makeText(this, "Start time should come first before end time", Toast.LENGTH_LONG).show()
+            }
+            else{
+                mEventViewModel.updateEvent(Event(eventId!!,dialogBinding.tvStart.text.toString(),dialogBinding.tvEnd.text.toString(),dialogBinding.etLocation.text.toString(),dialogBinding.etDes.text.toString(),dialogBinding.etTitle.text.toString()))
+                mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+                    adapter.setData(events)
+                })
+                dialog.dismiss()
+            }
+        }
+        dialogBinding.llStart.setOnClickListener {
+            val calendar: Calendar = Calendar.getInstance()
+            showDatePickerDialog(calendar, 0)
+        }
+        dialogBinding.llEnd.setOnClickListener {
+            val calendar: Calendar = Calendar.getInstance()
+            showDatePickerDialog(calendar, 1)
+        }
+        dialog.setCancelable(false)
+        dialog.show()
+        dialog.window!!.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -160,6 +226,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             val dialog = Dialog(this)
             dialogBinding = AddEventsLayoutBinding.inflate(layoutInflater)
             dialog.setContentView(dialogBinding.root)
+            dialogBinding.addBtn.text = "Add"
             dialogBinding.cancelBtn.setOnClickListener {
                 dialog.dismiss()
             }
