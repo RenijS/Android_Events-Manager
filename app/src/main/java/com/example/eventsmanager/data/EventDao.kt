@@ -12,6 +12,12 @@ interface EventDao {
     @Update
     suspend fun updateEvent(event: Event)
 
+    @Delete
+    suspend fun deleteEvent(event: Event)
+
+    @Query("DELETE FROM event_table")
+    suspend fun deleteAllEvents()
+
     @Query("SELECT * FROM event_table ORDER BY eventId ASC")
     fun readAllData(): LiveData<List<Event>>
 }

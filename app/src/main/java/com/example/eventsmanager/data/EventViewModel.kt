@@ -29,4 +29,16 @@ class EventViewModel(application: Application): AndroidViewModel(application) {
             repository.updateEvent(event)
         }
     }
+
+    fun deleteEvent(event: Event){
+        viewModelScope.launch(Dispatchers.IO){
+            repository.deleteUser(event)
+        }
+    }
+
+    fun deleteAllEvents(){
+        viewModelScope.launch(Dispatchers.IO){
+            repository.deleteAllEvents()
+        }
+    }
 }

@@ -145,7 +145,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 when(direction){
                     ItemTouchHelper.LEFT -> {
-                        adapter.deleteItem(viewHolder.adapterPosition)
+                        var selectedEvent: Event? = null
+                        mEventViewModel.readAllData.observe(this@MainActivity, androidx.lifecycle.Observer { events->
+                            //ones deleted adapterPosition becomes -1
+                            if(viewHolder.adapterPosition != -1) {
+                                selectedEvent = events[viewHolder.adapterPosition]
+                            }
+                        })
+                        mEventViewModel.deleteEvent(selectedEvent!!)
+                        mEventViewModel.readAllData.observe(this@MainActivity, androidx.lifecycle.Observer { events->
+                            adapter.setData(events)
+                        })
                     }
                 }
             }
