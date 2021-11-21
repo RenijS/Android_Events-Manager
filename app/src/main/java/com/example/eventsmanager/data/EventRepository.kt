@@ -21,4 +21,8 @@ class EventRepository(private val eventDao: EventDao) {
     suspend fun deleteAllEvents(){
         eventDao.deleteAllEvents()
     }
+
+    fun searchDatabase(searchQuery: String): LiveData<List<Event>>{
+        return eventDao.searchDatabase(searchQuery)
+    }
 }

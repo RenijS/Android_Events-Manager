@@ -2,6 +2,7 @@ package com.example.eventsmanager.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import java.util.concurrent.Flow
 
 @Dao
 interface EventDao {
@@ -20,4 +21,7 @@ interface EventDao {
 
     @Query("SELECT * FROM event_table ORDER BY eventId ASC")
     fun readAllData(): LiveData<List<Event>>
+
+    @Query("SELECT * FROM event_table WHERE title LIKE :searchQuery OR startTime LIKE :searchQuery OR endTime LIKE :searchQuery")
+    fun searchDatabase(searchQuery: String): LiveData<List<Event>>
 }

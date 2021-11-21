@@ -41,4 +41,8 @@ class EventViewModel(application: Application): AndroidViewModel(application) {
             repository.deleteAllEvents()
         }
     }
+
+    fun searchDatabase(searchQuery: String): LiveData<List<Event>>{
+        return repository.searchDatabase(searchQuery)
+    }
 }

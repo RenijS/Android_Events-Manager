@@ -7,14 +7,13 @@ import android.app.TimePickerDialog
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,7 +31,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, EventAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, EventAdapter.OnItemClickListener, SearchView.OnQueryTextListener {
 
     private lateinit var mEventViewModel: EventViewModel
 
@@ -170,46 +169,46 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             adapter.setData(events)
         })
 
-        binding.month.text = monthFormatter.format(today.time)
+//        binding.month.text = monthFormatter.format(today.time)
         //for month picker initial month selection
         var selectMonth = today.get(Calendar.MONTH)
         //month picker
-        binding.month.setOnClickListener {
-            val builder = MonthPickerDialog.Builder(this,
-                MonthPickerDialog.OnDateSetListener(){ selectedMonth, _ ->
-                    val cal = Calendar.getInstance()
-                    cal[Calendar.MONTH] = selectedMonth
-                    cal[Calendar.DAY_OF_MONTH] = 1
-                    selectMonth = selectedMonth
-                    binding.month.text = monthFormatter.format(cal.time)
-                    adapter.setFilterList(binding.year.text.toString(), (selectedMonth+1).toString())
-                }
-                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
-
-            builder.setActivatedMonth(Calendar.MONTH)
-                .setActivatedMonth(selectMonth)
-                .setTitle("Select Month")
-                .showMonthOnly()
-                .build().show()
-        }
+//        binding.month.setOnClickListener {
+//            val builder = MonthPickerDialog.Builder(this,
+//                MonthPickerDialog.OnDateSetListener(){ selectedMonth, _ ->
+//                    val cal = Calendar.getInstance()
+//                    cal[Calendar.MONTH] = selectedMonth
+//                    cal[Calendar.DAY_OF_MONTH] = 1
+//                    selectMonth = selectedMonth
+//                    binding.month.text = monthFormatter.format(cal.time)
+//                    adapter.setFilterList(binding.year.text.toString(), (selectedMonth+1).toString())
+//                }
+//                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
+//
+//            builder.setActivatedMonth(Calendar.MONTH)
+//                .setActivatedMonth(selectMonth)
+//                .setTitle("Select Month")
+//                .showMonthOnly()
+//                .build().show()
+//        }
 
         //year picker
-        binding.year.setOnClickListener {
-            val builder = MonthPickerDialog.Builder(this,
-                 MonthPickerDialog.OnDateSetListener() { _, selectedYear ->
-                     binding.year.text = selectedYear.toString()
-                     adapter.setFilterList(selectedYear.toString(), null)
-                 }
-                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
-
-            builder.setActivatedMonth(Calendar.MONTH)
-                .setMinYear(1999)
-                .setActivatedYear(Integer.parseInt(binding.year.text.toString()))
-                .setMaxYear(today.get(Calendar.YEAR)+25)
-                .setTitle("Select Year")
-                .showYearOnly()
-                .build().show()
-        }
+//        binding.year.setOnClickListener {
+//            val builder = MonthPickerDialog.Builder(this,
+//                 MonthPickerDialog.OnDateSetListener() { _, selectedYear ->
+//                     binding.year.text = selectedYear.toString()
+//                     adapter.setFilterList(selectedYear.toString(), null)
+//                 }
+//                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
+//
+//            builder.setActivatedMonth(Calendar.MONTH)
+//                .setMinYear(1999)
+//                .setActivatedYear(Integer.parseInt(binding.year.text.toString()))
+//                .setMaxYear(today.get(Calendar.YEAR)+25)
+//                .setTitle("Select Year")
+//                .showYearOnly()
+//                .build().show()
+//        }
 
         ArrayAdapter.createFromResource(
             this,
@@ -217,8 +216,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.monthSpinner.adapter = adapter
-            binding.monthSpinner.onItemSelectedListener = this
+//            binding.monthSpinner.adapter = adapter
+//            binding.monthSpinner.onItemSelectedListener = this
         }
 
         //activate for rv button
@@ -361,27 +360,59 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
     override fun onItemSelected(p: AdapterView<*>?, view: View?, position: Int, p3: Long) {
         val text = p?.getItemAtPosition(position).toString()
         Toast.makeText(this, "$text selected", Toast.LENGTH_SHORT).show()
-        when(text){
-            "Year" -> {
-                binding.month.visibility = View.GONE
-                binding.year.visibility = View.VISIBLE
-                binding.year.text = today.get(Calendar.YEAR).toString()
-            }
-            "Month+Year" -> {
-                binding.month.visibility = View.VISIBLE
-                binding.year.visibility = View.VISIBLE
-                binding.month.text = monthFormatter.format(today.time).toString()
-            }
-            "All" ->{
-                binding.month.visibility = View.GONE
-                binding.year.visibility = View.GONE
-                adapter.setFilterList(null, null)
-            }
-        }
+//        when(text){
+//            "Year" -> {
+//                binding.month.visibility = View.GONE
+//                binding.year.visibility = View.VISIBLE
+//                binding.year.text = today.get(Calendar.YEAR).toString()
+//            }
+//            "Month+Year" -> {
+//                binding.month.visibility = View.VISIBLE
+//                binding.year.visibility = View.VISIBLE
+//                binding.month.text = monthFormatter.format(today.time).toString()
+//            }
+//            "All" ->{
+//                binding.month.visibility = View.GONE
+//                binding.year.visibility = View.GONE
+//                adapter.setFilterList(null, null)
+//            }
+//        }
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
         TODO("Not yet implemented")
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        val search = menu?.findItem(R.id.menu_search)
+        val searchView = search?.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if (query != null){
+            searchDatabase(query)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        if (query != null){
+            searchDatabase(query)
+        }
+        return true
+    }
+
+    private fun searchDatabase(query: String){
+        val searchQuery = "%$query%"
+        mEventViewModel.searchDatabase(searchQuery).observe(this, { events ->
+            events.let {
+                adapter.setData(it)
+            }
+        })
+    }
 }
