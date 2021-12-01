@@ -4,9 +4,15 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.view.Menu
 import android.view.View
 import android.view.animation.Animation
@@ -14,6 +20,7 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +33,7 @@ import com.example.eventsmanager.databinding.RvLayoutBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.whiteelephant.monthpicker.MonthPickerDialog
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.AssertionError
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -54,6 +62,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
     private val fromEnd: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.from_end_anim) }
     private val toEnd: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_end_anim) }
+
+    private val READ_CALENDAR_RQ = 101
+    private val WRITE_CALENDAR_RQ = 102
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -272,6 +283,214 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             dialog.show()
             dialog.window!!.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         }
+
+        binding.importBtn.setOnClickListener {
+            if (checkForPermission(android.Manifest.permission.READ_CALENDAR, READ_CALENDAR_RQ)
+                && checkForPermission(android.Manifest.permission.WRITE_CALENDAR, WRITE_CALENDAR_RQ)
+            ) {
+                mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+                    insertEventsToLocal(events)
+                    deleteEvents(events)
+                })
+            }
+        }
+    }
+
+    private fun checkForPermission(permission: String, requestCode: Int): Boolean{
+        if(ContextCompat.checkSelfPermission(applicationContext,permission) == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+        requestPermissions(arrayOf(permission), requestCode)
+        return false
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        fun innerCheck(name: String){
+            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "$name permission refused", Toast.LENGTH_SHORT).show()
+            } else{
+                Toast.makeText(this, "$name permission granted", Toast.LENGTH_SHORT).show()
+            }
+        }
+        when(requestCode){
+            READ_CALENDAR_RQ -> innerCheck("read calendar")
+            WRITE_CALENDAR_RQ -> innerCheck("write calendar")
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun insertEventsToLocal(eventsList: List<Event>){
+        if (eventsList.isEmpty()){
+            Toast.makeText(this, "List is empty", Toast.LENGTH_SHORT).show()
+        } else {
+            eventsList.forEach { event ->
+                println("CHeck!: events:  $event")
+                if (event.startTime != null) {
+                    val startTime = LocalDateTime.parse(event.startTime, eventTimeFormatter)
+                    println("Check!!!: entered")
+                    if(startTime>=LocalDateTime.now()) {
+                        println("Check!!!: entered2")
+                        val startMillis: Long = getTimeInLong(event.startTime)
+                        val endMillis: Long = getTimeInLong(event.endTime)
+                        if (!isEventInCal(event.eventId, 816)) {
+                            println("Check!!!: entered3")
+                            val values = ContentValues().apply {
+                                put(CalendarContract.Events.DTSTART, startMillis)
+                                put(CalendarContract.Events.DTEND, endMillis)
+                                put(CalendarContract.Events.TITLE, event.title)
+                                put(CalendarContract.Events.DESCRIPTION, event.detail)
+                                put(CalendarContract.Events.CALENDAR_ID, 2)
+                                put(CalendarContract.Events.ORIGINAL_ID, 816)
+                                put(CalendarContract.Events.UID_2445, event.eventId)
+                                put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Tokyo")
+                            }
+                            val uri: Uri? = contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
+                            println("event added: $uri")
+                        }
+                        else{
+                            println("Check!!!: entered4")
+                            updateEventInCal(event)
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Event time length : ${event.startTime.length}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateEventInCal(event: Event) {
+        val proj = arrayOf(
+            CalendarContract.Instances.ORIGINAL_ID,
+            CalendarContract.Instances.UID_2445,
+            CalendarContract.Instances._ID
+        )
+        val selection: String = "((${CalendarContract.Events.ORIGINAL_ID} = ?) AND (" +
+                "${CalendarContract.Events.UID_2445} = ?) AND (" +
+                "(${CalendarContract.Events.DTSTART} != ?)" +
+                " OR (${CalendarContract.Events.DTEND} != ?) OR (${CalendarContract.Events.TITLE} != ?)))"
+
+        val selectionArgs: Array<String> = arrayOf("816", "${event.eventId}"
+            , "${getTimeInLong(event.startTime)}", "${getTimeInLong(event.endTime)}", "${event.title}")
+
+        val cursor = contentResolver.query(
+            Uri.parse("content://com.android.calendar/events"),
+            proj,
+            selection,
+            selectionArgs,
+            null
+        )
+        try {
+            if (cursor!!.count > 0) {
+                while (cursor.moveToNext()) {
+                    val originalID = cursor.getString(0)
+                    val id = cursor.getString(1)
+                    val _id = cursor.getString(2)
+                    if (originalID != null) {
+                        //change
+                        val startMillis: Long = getTimeInLong(event.startTime)
+                        val endMillis: Long = getTimeInLong(event.endTime)
+                        val values = ContentValues().apply {
+                            put(CalendarContract.Events.DTSTART, startMillis)
+                            put(CalendarContract.Events.DTEND, endMillis)
+                            put(CalendarContract.Events.TITLE, event.title)
+                        }
+                        val updateUri: Uri = ContentUris.withAppendedId(
+                            CalendarContract.Events.CONTENT_URI,
+                            _id.toLong()
+                        )
+                        val rows: Int = contentResolver.update(updateUri, values, null, null)
+                        println("Rows updated: $rows id: $id _id: $_id")
+                    }
+                }
+            }
+        } catch (ex: AssertionError) {
+            ex.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun deleteEvents(eventsList: List<Event>) {
+        val proj = arrayOf(
+            CalendarContract.Instances.UID_2445,
+            CalendarContract.Instances._ID
+        )
+        val cursor = contentResolver.query(
+            Uri.parse("content://com.android.calendar/events"),
+            proj,
+            "${CalendarContract.Events.ORIGINAL_ID} = 816",
+            null,
+            null
+        )
+
+        try {
+            if (cursor!!.count > 0) {
+                while (cursor.moveToNext()) {
+                    val id = cursor.getString(0)
+                    val _id = cursor.getString(1)
+                    if (id != null) {
+                        var found = false
+                        for (i in eventsList.indices) {
+                            if (!found) {
+                                if (eventsList[i].eventId.toString().equals(id)) {
+                                    found = true
+                                }
+                                else if (i == eventsList.size-1) {
+                                    //delete the event
+                                    val deleteUri: Uri = ContentUris.withAppendedId(
+                                        CalendarContract.Events.CONTENT_URI,
+                                        _id.toLong()
+                                    )
+                                    val rows: Int =
+                                        contentResolver.delete(deleteUri, null, null)
+                                    println("Rows deleted: $rows id: $id _id: $_id")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (ex: AssertionError) {
+            ex.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getTimeInLong(time: String?): Long{
+        val parsedTime = LocalDateTime.parse(time, eventTimeFormatter)
+        val timeMillis: Long = Calendar.getInstance().run {
+            set(parsedTime.year, parsedTime.monthValue-1, parsedTime.dayOfMonth, parsedTime.hour, parsedTime.minute, parsedTime.second)
+            timeInMillis
+        }
+        return timeMillis
+    }
+
+    private fun isEventInCal(id:Int?, identifierId: Int): Boolean{
+        val proj = arrayOf(
+            CalendarContract.Instances.UID_2445
+        )
+        val cursor = contentResolver.query(
+            Uri.parse("content://com.android.calendar/events"),
+            proj,
+            "${CalendarContract.Events.UID_2445} = $id AND ${CalendarContract.Events.ORIGINAL_ID} = $identifierId",
+            null,
+            null
+        )
+        if(cursor!!.moveToFirst()){
+            if (cursor.getString(0).equals(id.toString())) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun buttonVisibilityWork(){
@@ -353,7 +572,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         val event = Event(0,startTime.toString(),endTime.toString(),location.toString(),desc.toString(),title.toString())
         //add data
         mEventViewModel.addEvent(event)
-        Toast.makeText(this, "Added", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Added $event", Toast.LENGTH_SHORT).show()
     }
 
 
