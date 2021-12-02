@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.pm.PackageManager
@@ -29,9 +28,7 @@ import com.example.eventsmanager.data.Event
 import com.example.eventsmanager.data.EventViewModel
 import com.example.eventsmanager.databinding.ActivityMainBinding
 import com.example.eventsmanager.databinding.AddEventsLayoutBinding
-import com.example.eventsmanager.databinding.RvLayoutBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.whiteelephant.monthpicker.MonthPickerDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.AssertionError
 import java.text.SimpleDateFormat
@@ -39,7 +36,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, EventAdapter.OnItemClickListener, SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, SearchView.OnQueryTextListener {
 
     private lateinit var mEventViewModel: EventViewModel
 
@@ -47,12 +44,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
     private lateinit var dialogBinding: AddEventsLayoutBinding
 
     private lateinit var addBtn: FloatingActionButton
-    private var today = Calendar.getInstance()
     @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.N)
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val timeFormatter = SimpleDateFormat("HH:mm", Locale.US)
-    private val monthFormatter = SimpleDateFormat("MMM")
     @RequiresApi(Build.VERSION_CODES.O)
     private val eventTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
@@ -93,7 +88,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         var detail: String? = null
         var title: String? = null
 
-        mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+        mEventViewModel.readAllData.observe(this, { events->
             eventId = events[position].eventId
             startTime = events[position].startTime
             endTime = events[position].endTime
@@ -128,7 +123,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             }
             else{
                 mEventViewModel.updateEvent(Event(eventId!!,dialogBinding.tvStart.text.toString(),dialogBinding.tvEnd.text.toString(),dialogBinding.etLocation.text.toString(),dialogBinding.etDes.text.toString(),dialogBinding.etTitle.text.toString()))
-                mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+                mEventViewModel.readAllData.observe(this, { events->
                     adapter.setData(events)
                 })
                 dialog.dismiss()
@@ -156,14 +151,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
                 when(direction){
                     ItemTouchHelper.LEFT -> {
                         var selectedEvent: Event? = null
-                        mEventViewModel.readAllData.observe(this@MainActivity, androidx.lifecycle.Observer { events->
+                        mEventViewModel.readAllData.observe(this@MainActivity, { events->
                             //ones deleted adapterPosition becomes -1
                             if(viewHolder.adapterPosition != -1) {
                                 selectedEvent = events[viewHolder.adapterPosition]
                             }
                         })
                         mEventViewModel.deleteEvent(selectedEvent!!)
-                        mEventViewModel.readAllData.observe(this@MainActivity, androidx.lifecycle.Observer { events->
+                        mEventViewModel.readAllData.observe(this@MainActivity, { events->
                             adapter.setData(events)
                         })
                     }
@@ -176,50 +171,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         binding.rvEvents.adapter = adapter
         binding.rvEvents.layoutManager = LinearLayoutManager(this)
 
-        mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+        mEventViewModel.readAllData.observe(this, { events->
             adapter.setData(events)
         })
-
-//        binding.month.text = monthFormatter.format(today.time)
-        //for month picker initial month selection
-        var selectMonth = today.get(Calendar.MONTH)
-        //month picker
-//        binding.month.setOnClickListener {
-//            val builder = MonthPickerDialog.Builder(this,
-//                MonthPickerDialog.OnDateSetListener(){ selectedMonth, _ ->
-//                    val cal = Calendar.getInstance()
-//                    cal[Calendar.MONTH] = selectedMonth
-//                    cal[Calendar.DAY_OF_MONTH] = 1
-//                    selectMonth = selectedMonth
-//                    binding.month.text = monthFormatter.format(cal.time)
-//                    adapter.setFilterList(binding.year.text.toString(), (selectedMonth+1).toString())
-//                }
-//                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
-//
-//            builder.setActivatedMonth(Calendar.MONTH)
-//                .setActivatedMonth(selectMonth)
-//                .setTitle("Select Month")
-//                .showMonthOnly()
-//                .build().show()
-//        }
-
-        //year picker
-//        binding.year.setOnClickListener {
-//            val builder = MonthPickerDialog.Builder(this,
-//                 MonthPickerDialog.OnDateSetListener() { _, selectedYear ->
-//                     binding.year.text = selectedYear.toString()
-//                     adapter.setFilterList(selectedYear.toString(), null)
-//                 }
-//                , today.get(Calendar.YEAR), today.get(Calendar.MONTH))
-//
-//            builder.setActivatedMonth(Calendar.MONTH)
-//                .setMinYear(1999)
-//                .setActivatedYear(Integer.parseInt(binding.year.text.toString()))
-//                .setMaxYear(today.get(Calendar.YEAR)+25)
-//                .setTitle("Select Year")
-//                .showYearOnly()
-//                .build().show()
-//        }
 
         ArrayAdapter.createFromResource(
             this,
@@ -227,8 +181,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//            binding.monthSpinner.adapter = adapter
-//            binding.monthSpinner.onItemSelectedListener = this
         }
 
         //activate for rv button
@@ -288,7 +240,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
             if (checkForPermission(android.Manifest.permission.READ_CALENDAR, READ_CALENDAR_RQ)
                 && checkForPermission(android.Manifest.permission.WRITE_CALENDAR, WRITE_CALENDAR_RQ)
             ) {
-                mEventViewModel.readAllData.observe(this, androidx.lifecycle.Observer { events->
+                mEventViewModel.readAllData.observe(this, { events->
                     insertEventsToLocal(events)
                     deleteEvents(events)
                 })
@@ -330,35 +282,31 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         } else {
             eventsList.forEach { event ->
                 println("CHeck!: events:  $event")
-                if (event.startTime != null) {
-                    val startTime = LocalDateTime.parse(event.startTime, eventTimeFormatter)
-                    println("Check!!!: entered")
-                    if(startTime>=LocalDateTime.now()) {
-                        println("Check!!!: entered2")
-                        val startMillis: Long = getTimeInLong(event.startTime)
-                        val endMillis: Long = getTimeInLong(event.endTime)
-                        if (!isEventInCal(event.eventId, 816)) {
-                            println("Check!!!: entered3")
-                            val values = ContentValues().apply {
-                                put(CalendarContract.Events.DTSTART, startMillis)
-                                put(CalendarContract.Events.DTEND, endMillis)
-                                put(CalendarContract.Events.TITLE, event.title)
-                                put(CalendarContract.Events.DESCRIPTION, event.detail)
-                                put(CalendarContract.Events.CALENDAR_ID, 2)
-                                put(CalendarContract.Events.ORIGINAL_ID, 816)
-                                put(CalendarContract.Events.UID_2445, event.eventId)
-                                put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Tokyo")
-                            }
-                            val uri: Uri? = contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
-                            println("event added: $uri")
+                val startTime = LocalDateTime.parse(event.startTime, eventTimeFormatter)
+                println("Check!!!: entered")
+                if(startTime>=LocalDateTime.now()) {
+                    println("Check!!!: entered2")
+                    val startMillis: Long = getTimeInLong(event.startTime)
+                    val endMillis: Long = getTimeInLong(event.endTime)
+                    if (!isEventInCal(event.eventId, 816)) {
+                        println("Check!!!: entered3")
+                        val values = ContentValues().apply {
+                            put(CalendarContract.Events.DTSTART, startMillis)
+                            put(CalendarContract.Events.DTEND, endMillis)
+                            put(CalendarContract.Events.TITLE, event.title)
+                            put(CalendarContract.Events.DESCRIPTION, event.detail)
+                            put(CalendarContract.Events.CALENDAR_ID, 2)
+                            put(CalendarContract.Events.ORIGINAL_ID, 816)
+                            put(CalendarContract.Events.UID_2445, event.eventId)
+                            put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Tokyo")
                         }
-                        else{
-                            println("Check!!!: entered4")
-                            updateEventInCal(event)
-                        }
+                        val uri: Uri? = contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
+                        println("event added: $uri")
                     }
-                } else {
-                    Toast.makeText(this, "Event time length : ${event.startTime.length}", Toast.LENGTH_SHORT).show()
+                    else{
+                        println("Check!!!: entered4")
+                        updateEventInCal(event)
+                    }
                 }
             }
         }
@@ -377,7 +325,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
                 " OR (${CalendarContract.Events.DTEND} != ?) OR (${CalendarContract.Events.TITLE} != ?)))"
 
         val selectionArgs: Array<String> = arrayOf("816", "${event.eventId}"
-            , "${getTimeInLong(event.startTime)}", "${getTimeInLong(event.endTime)}", "${event.title}")
+            , "${getTimeInLong(event.startTime)}", "${getTimeInLong(event.endTime)}", event.title
+        )
 
         val cursor = contentResolver.query(
             Uri.parse("content://com.android.calendar/events"),
@@ -439,7 +388,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
                         var found = false
                         for (i in eventsList.indices) {
                             if (!found) {
-                                if (eventsList[i].eventId.toString().equals(id)) {
+                                if (eventsList[i].eventId.toString() == id) {
                                     found = true
                                 }
                                 else if (i == eventsList.size-1) {
@@ -521,7 +470,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
     @RequiresApi(Build.VERSION_CODES.N)
     private fun showDatePickerDialog(calendar: Calendar, identifier: Int){
         val datePickerDialog =
-            DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, yr, mnth, dayOfMonth ->
+            DatePickerDialog(this, { datePicker, yr, mnth, dayOfMonth ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(yr, mnth, dayOfMonth)
                 val date = dateFormatter.format(selectedDate.time)
@@ -540,7 +489,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
     }
 
     private fun showTimePickerDialog(calendar: Calendar, identifier: Int){
-        val timePickerDialog = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, min ->
+        val timePickerDialog = TimePickerDialog(this, { timePicker, hourOfDay, min ->
             val selectedTime = Calendar.getInstance()
             selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
             selectedTime.set(Calendar.MINUTE, min)
@@ -575,33 +524,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         Toast.makeText(this, "Added $event", Toast.LENGTH_SHORT).show()
     }
 
-
-    override fun onItemSelected(p: AdapterView<*>?, view: View?, position: Int, p3: Long) {
-        val text = p?.getItemAtPosition(position).toString()
-        Toast.makeText(this, "$text selected", Toast.LENGTH_SHORT).show()
-//        when(text){
-//            "Year" -> {
-//                binding.month.visibility = View.GONE
-//                binding.year.visibility = View.VISIBLE
-//                binding.year.text = today.get(Calendar.YEAR).toString()
-//            }
-//            "Month+Year" -> {
-//                binding.month.visibility = View.VISIBLE
-//                binding.year.visibility = View.VISIBLE
-//                binding.month.text = monthFormatter.format(today.time).toString()
-//            }
-//            "All" ->{
-//                binding.month.visibility = View.GONE
-//                binding.year.visibility = View.GONE
-//                adapter.setFilterList(null, null)
-//            }
-//        }
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
 
@@ -630,6 +552,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, Ev
         val searchQuery = "%$query%"
         mEventViewModel.searchDatabase(searchQuery).observe(this, { events ->
             events.let {
+                println("Check!!!: $it")
                 adapter.setData(it)
             }
         })

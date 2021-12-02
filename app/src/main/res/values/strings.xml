@@ -7,6 +7,7 @@
     <string name="delete_button">Delete Button</string>
     <string name="import_events_to_calendar_button">Import events to Calendar Button</string>
     <string name="edit_button">edit button</string>
+    <string name="search">search</string>
 
     <string-array name="selection">
         <item>All</item>

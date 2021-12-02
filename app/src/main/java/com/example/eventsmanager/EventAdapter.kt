@@ -18,9 +18,7 @@ class EventAdapter(private val context: Context, private val listener: OnItemCli
     lateinit var binding: RvLayoutBinding
 
     private var eventList = emptyList<Event>()
-    private var filterList = mutableListOf<Event>()
     private var activate: Boolean = false
-    private var editType: Int = 0;
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
@@ -45,92 +43,26 @@ class EventAdapter(private val context: Context, private val listener: OnItemCli
     }
 
     override fun onBindViewHolder(holder: EventAdapter.ViewHolder, position: Int) {
-        val currentEvent = filterList[position]
+        val currentEvent = eventList[position]
         binding.tvTitle.text = currentEvent.title
         binding.tvStartTime.text = currentEvent.startTime
         binding.tvEndTime.text = currentEvent.endTime
-
-        if (activate){
-            binding.editBtn.visibility = View.VISIBLE
-            if(editType == 0){
-                binding.editBtn.setImageResource(R.drawable.ic_delete)
-            }
-            else{
-                binding.editBtn.setImageResource(R.drawable.ic_update)
-            }
-        } else{
-            binding.editBtn.visibility = View.GONE
-        }
-
-        binding.editBtn.setOnClickListener {
-            if(editType == 0){
-                val builder = AlertDialog.Builder(context)
-                builder.setTitle("Delete Event?")
-                builder.apply {
-                    setPositiveButton("Ok", DialogInterface.OnClickListener { dialogInterface, id ->  })
-                    setNegativeButton("No", DialogInterface.OnClickListener { dialogInterface, id ->  })
-                }
-                builder.create()
-            }
-            else{
-                val dialog = Dialog(context)
-                val dialogBinding = AddEventsLayoutBinding.inflate(LayoutInflater.from(context))
-                dialog.setContentView(dialogBinding.root)
-                dialogBinding.addBtn.text = "Save"
-                dialogBinding.cancelBtn.setOnClickListener {
-                    dialogBinding.addBtn.text = "Add"
-                    dialog.dismiss()
-                }
-            }
-        }
     }
 
     override fun getItemCount(): Int {
-        return filterList.size
+        return eventList.size
     }
 
     fun setData(events : List<Event>){
         this.eventList = events
-        this.filterList = eventList.toMutableList()
+        println("check!!!: event set: $events")
         notifyDataSetChanged()
     }
 
-    fun setFilterList(year: String?, month: String?){
-        filterList.clear()
-        for(event in eventList){
-            val startTime = event.startTime
-            if(month == null && year == null){
-                filterList = eventList.toMutableList()
-                notifyDataSetChanged()
-            }
-            else if(month == null && year != null) {
-                if (startTime.substring(0, startTime.indexOf("-")).equals(year)) {
-                    filterList.add(event)
-                }
-                notifyDataSetChanged()
-            }
-            else{
-                if (startTime.substring(0, startTime.indexOf("-")) == year &&
-                    Integer.parseInt(startTime.substring(startTime.indexOf("-")+1, startTime.indexOf("-")+3)) == Integer.parseInt(month)) {
-                    filterList.add(event)
-                }
-                notifyDataSetChanged()
-            }
-        }
-    }
 
     fun setActivate(activate: Boolean){
         this.activate = activate
         notifyDataSetChanged()
     }
-    fun setActivate(activate: Boolean, type: Int){
-        this.activate = activate
-        editType = type
-        notifyDataSetChanged()
-    }
 
-    fun deleteItem(position: Int){
-        filterList.removeAt(position)
-        notifyDataSetChanged()
-    }
 }

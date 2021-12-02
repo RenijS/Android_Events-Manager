@@ -2,7 +2,6 @@ package com.example.eventsmanager.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import java.util.concurrent.Flow
 
 @Dao
 interface EventDao {

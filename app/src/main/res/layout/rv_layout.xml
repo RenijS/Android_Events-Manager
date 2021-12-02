@@ -39,15 +39,5 @@
             android:text="end"
             android:textSize="18sp"
             android:layout_weight="1"/>
-
-        <ImageButton
-            android:id="@+id/editBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/edit_button"
-            android:src="@drawable/ic_delete"
-            android:visibility="gone"
-            android:padding="4dp"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
