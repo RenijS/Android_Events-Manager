@@ -1,6 +1,7 @@
 package com.example.eventsmanager.data
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 class EventRepository(private val eventDao: EventDao) {
 
@@ -22,7 +23,7 @@ class EventRepository(private val eventDao: EventDao) {
         eventDao.deleteAllEvents()
     }
 
-    fun searchDatabase(searchQuery: String): LiveData<List<Event>>{
+    fun searchDatabase(searchQuery: String): Flow<List<Event>>{
         return eventDao.searchDatabase(searchQuery)
     }
 }

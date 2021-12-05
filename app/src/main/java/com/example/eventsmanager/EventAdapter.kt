@@ -54,8 +54,8 @@ class EventAdapter(private val context: Context, private val listener: OnItemCli
     }
 
     fun setData(events : List<Event>){
+        this.eventList = emptyList()
         this.eventList = events
-        println("check!!!: event set: $events")
         notifyDataSetChanged()
     }
 

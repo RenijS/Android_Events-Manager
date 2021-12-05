@@ -3,6 +3,7 @@ package com.example.eventsmanager.data
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,6 +44,6 @@ class EventViewModel(application: Application): AndroidViewModel(application) {
     }
 
     fun searchDatabase(searchQuery: String): LiveData<List<Event>>{
-        return repository.searchDatabase(searchQuery)
+        return repository.searchDatabase(searchQuery).asLiveData()
     }
 }

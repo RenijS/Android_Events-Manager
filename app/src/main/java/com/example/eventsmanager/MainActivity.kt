@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(position: Int) {
-        Toast.makeText(this, "clicked: $position", Toast.LENGTH_SHORT).show()
         val dialog = Dialog(this)
         dialogBinding = AddEventsLayoutBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
@@ -88,13 +87,16 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
         var detail: String? = null
         var title: String? = null
 
+
         mEventViewModel.readAllData.observe(this, { events->
-            eventId = events[position].eventId
-            startTime = events[position].startTime
-            endTime = events[position].endTime
-            location = events[position].location
-            detail = events[position].detail
-            title = events[position].title
+            if(position < events.size) {
+                eventId = events[position].eventId
+                startTime = events[position].startTime
+                endTime = events[position].endTime
+                location = events[position].location
+                detail = events[position].detail
+                title = events[position].title
+            }
         })
         dialogBinding.etTitle.setText(title)
         dialogBinding.etDes.setText(detail)
@@ -151,16 +153,18 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
                 when(direction){
                     ItemTouchHelper.LEFT -> {
                         var selectedEvent: Event? = null
-                        mEventViewModel.readAllData.observe(this@MainActivity, { events->
+                        mEventViewModel.readAllData.observe(this@MainActivity, { events ->
                             //ones deleted adapterPosition becomes -1
-                            if(viewHolder.adapterPosition != -1) {
+                            if (viewHolder.adapterPosition != -1) {
                                 selectedEvent = events[viewHolder.adapterPosition]
                             }
                         })
-                        mEventViewModel.deleteEvent(selectedEvent!!)
-                        mEventViewModel.readAllData.observe(this@MainActivity, { events->
-                            adapter.setData(events)
-                        })
+                        if (selectedEvent != null) {
+                            mEventViewModel.deleteEvent(selectedEvent!!)
+                            mEventViewModel.readAllData.observe(this@MainActivity, { events ->
+                                adapter.setData(events)
+                            })
+                        }
                     }
                 }
             }
@@ -281,15 +285,11 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
             Toast.makeText(this, "List is empty", Toast.LENGTH_SHORT).show()
         } else {
             eventsList.forEach { event ->
-                println("CHeck!: events:  $event")
                 val startTime = LocalDateTime.parse(event.startTime, eventTimeFormatter)
-                println("Check!!!: entered")
                 if(startTime>=LocalDateTime.now()) {
-                    println("Check!!!: entered2")
                     val startMillis: Long = getTimeInLong(event.startTime)
                     val endMillis: Long = getTimeInLong(event.endTime)
                     if (!isEventInCal(event.eventId, 816)) {
-                        println("Check!!!: entered3")
                         val values = ContentValues().apply {
                             put(CalendarContract.Events.DTSTART, startMillis)
                             put(CalendarContract.Events.DTEND, endMillis)
@@ -304,7 +304,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
                         println("event added: $uri")
                     }
                     else{
-                        println("Check!!!: entered4")
                         updateEventInCal(event)
                     }
                 }
@@ -392,7 +391,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
                                     found = true
                                 }
                                 else if (i == eventsList.size-1) {
-                                    //delete the event
                                     val deleteUri: Uri = ContentUris.withAppendedId(
                                         CalendarContract.Events.CONTENT_URI,
                                         _id.toLong()
@@ -470,11 +468,10 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
     @RequiresApi(Build.VERSION_CODES.N)
     private fun showDatePickerDialog(calendar: Calendar, identifier: Int){
         val datePickerDialog =
-            DatePickerDialog(this, { datePicker, yr, mnth, dayOfMonth ->
+            DatePickerDialog(this, { _, yr, mnth, dayOfMonth ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(yr, mnth, dayOfMonth)
                 val date = dateFormatter.format(selectedDate.time)
-                Toast.makeText(this, "Date: $date", Toast.LENGTH_LONG).show()
                 if(identifier == 0) {
                     dialogBinding.tvStart.text = date
                 }
@@ -494,7 +491,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
             selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
             selectedTime.set(Calendar.MINUTE, min)
             val time = timeFormatter.format(selectedTime.time)
-            Toast.makeText(this, "Time: $time", Toast.LENGTH_LONG).show()
             if(identifier == 0) {
                 dialogBinding.tvStart.text = "${dialogBinding.tvStart.text} $time"
             }
@@ -521,7 +517,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
         val event = Event(0,startTime.toString(),endTime.toString(),location.toString(),desc.toString(),title.toString())
         //add data
         mEventViewModel.addEvent(event)
-        Toast.makeText(this, "Added $event", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -552,7 +547,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Sear
         val searchQuery = "%$query%"
         mEventViewModel.searchDatabase(searchQuery).observe(this, { events ->
             events.let {
-                println("Check!!!: $it")
                 adapter.setData(it)
             }
         })

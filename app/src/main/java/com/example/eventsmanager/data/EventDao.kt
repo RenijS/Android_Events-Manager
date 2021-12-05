@@ -2,6 +2,7 @@ package com.example.eventsmanager.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EventDao {
@@ -22,5 +23,5 @@ interface EventDao {
     fun readAllData(): LiveData<List<Event>>
 
     @Query("SELECT * FROM event_table WHERE title LIKE :searchQuery OR startTime LIKE :searchQuery OR endTime LIKE :searchQuery")
-    fun searchDatabase(searchQuery: String): LiveData<List<Event>>
+    fun searchDatabase(searchQuery: String): Flow<List<Event>>
 }
